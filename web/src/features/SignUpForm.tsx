@@ -45,7 +45,7 @@ const SignUpForm: React.FC = () => {
     .then (response => {
       response = JSON.parse(response);
       localStorage.setItem('user', JSON.stringify(response));
-      
+      window.location.href = "/words";
     })
   }
 
@@ -76,10 +76,7 @@ const SignUpForm: React.FC = () => {
     })
     .then (async response => {
       response = JSON.parse(await response.text());
-      const status = response.status;
-      if (status == 200) {
-        getToken(e, formData);
-      }
+      getToken(e, formData);
     }).catch((err: unknown) =>  {
       console.error(err);
     })

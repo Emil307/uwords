@@ -41,7 +41,7 @@ const WordsInfo: React.FC<WordsInfoProps> = ({ progress, title }) => {
       <Image src={fon} alt="fon" />
       <Content>
         <Title fontSize={24}>{title}</Title>
-        <ProgressBar progress={progress} width='240px' height='20px'/>
+        <ProgressBar progress={99 + 1} width='240px' height='20px'/>
         <Button height='41px'>Continue</Button>
       </Content>
     </Container>

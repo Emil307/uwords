@@ -1,45 +1,50 @@
-import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:record_mp3/record_mp3.dart';
 import 'dart:async';
-import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+
+import 'package:flutter/material.dart';
 import 'package:govorilka/customComponents.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_sound/flutter_sound.dart';
+import 'package:http/http.dart' as http;
 
 class RecordingService {
+  var recorder = FlutterSoundRecorder();
   BuildContext context;
-  RecordingService(this.context);
+  RecordingService(this.context, this.recorder);
 
   bool isRecording = false;
 
-  void startrecord() async {
-    print('-----recording started-----');
+  void startRecord() async {
+    isRecording = true;
     bool isPermissionGranted = await _checkPermission();
     if (isPermissionGranted) {
-      isRecording = true;
-      RecordMp3.instance.start(
-        await getFilePath(),
-        (type) => throw Exception('error ocused when starting'),
-      );
+      recorder.openRecorder();
+      recorder.startRecorder(toFile: 'demo');
     }
   }
 
   void stopRecord() async {
-    print('-----recording stopped-----');
-    RecordMp3.instance.stop();
     isRecording = false;
+    recorder.stopRecorder();
+    var url = await recorder.stopRecorder().then((value) => value);
+    //recorder.closeRecorder();
+    submitRecord(url);
+  }
+
+  void submitRecord(dynamic url) async {
     showDialog(
       context: context,
-      builder: (context) => CustomComponents().customDialog(context),
+      builder: (context) => CustomComponents().customDialog(context, url),
     );
   }
 
-  void submitRecord() async {
-    //TODO: сабмит записи + setRecordInAPI
-  }
+  static void setRecordInAPI(String url) async {
+    print(url);
+    final response = await http.get(Uri.parse(url));
+    if(response.statusCode == 201){
 
-  void setRecordInAPI() async {
-    //TODO: метод который закидывает запись в бек
+    }
   }
 
   Future<String> getFilePath() async {
